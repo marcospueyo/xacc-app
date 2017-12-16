@@ -13,5 +13,11 @@ public abstract class AbstractRepository {
 
     String description;
 
+    String url;
+
+    Boolean fork;
+
     String ownerLogin;
+
+    String ownerUrl;
 }

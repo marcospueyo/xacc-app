@@ -5,10 +5,13 @@ import com.google.gson.annotations.SerializedName;
 public class RestOwner {
 
     @SerializedName("id")
-    public String id;
+    private String id;
+
+    @SerializedName("login")
+    private String login;
 
     @SerializedName("html_url")
-    public String htmlURL;
+    private String htmlURL;
 
     public RestOwner() {
     }
@@ -27,5 +30,13 @@ public class RestOwner {
 
     public void setHtmlURL(String htmlURL) {
         this.htmlURL = htmlURL;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
     }
 }

@@ -36,7 +36,7 @@ public class DatabaseImpl implements Database {
     }
 
     private void initDataSore(Context context) {
-        DatabaseSource source = new DatabaseSource(context, Models.DEFAULT, 8);
+        DatabaseSource source = new DatabaseSource(context, Models.DEFAULT, 9);
         if (BuildConfig.DEBUG) {
             source.setTableCreationMode(TableCreationMode.DROP_CREATE);
         }

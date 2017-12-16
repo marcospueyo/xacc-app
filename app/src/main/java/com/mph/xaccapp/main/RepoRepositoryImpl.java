@@ -3,7 +3,9 @@ package com.mph.xaccapp.main;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.mph.xaccapp.model.Repository;
 import com.mph.xaccapp.network.RestRepository;
+import com.mph.xaccapp.network.RestRepositoryMapper;
 
 import java.util.List;
 
@@ -21,10 +23,15 @@ public class RepoRepositoryImpl implements RepoRepository {
     @NonNull
     private EntityDataStore<Persistable> mDataStore;
 
+    @NonNull
+    private final RestRepositoryMapper mMapper;
+
     public RepoRepositoryImpl(@NonNull RepositoryService repositoryService,
-                              @NonNull EntityDataStore<Persistable> dataStore) {
+                              @NonNull EntityDataStore<Persistable> dataStore,
+                              @NonNull RestRepositoryMapper mapper) {
         mRepositoryService = repositoryService;
         mDataStore = dataStore;
+        mMapper = mapper;
     }
 
     @Override
@@ -33,7 +40,9 @@ public class RepoRepositoryImpl implements RepoRepository {
             mRepositoryService.getRepositories(new RepositoryService.OnFetchCompletedListener() {
                 @Override
                 public void onRepositoriesFetched(List<RestRepository> restRepositories) {
-                    Log.d(TAG, "onRepositoriesFetched: no. of repos = " + restRepositories.size());
+                    List<Repository> repositories = mMapper.map(restRepositories);
+                    saveFetchedEntities(repositories);
+                    listener.onReposLoaded(repositories);
                 }
 
                 @Override
@@ -46,5 +55,18 @@ public class RepoRepositoryImpl implements RepoRepository {
 
     private boolean shouldLoadFromRemoteStore() {
         return true;
+    }
+
+    private void saveFetchedEntities(Iterable<Repository> repositories) {
+        deleteEntities();
+        persistEntities(repositories);
+    }
+
+    private void deleteEntities() {
+        mDataStore.delete(Repository.class).get().value();
+    }
+
+    private void persistEntities(Iterable<Repository> repositories) {
+        mDataStore.insert(repositories);
     }
 }

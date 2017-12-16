@@ -8,4 +8,8 @@ public interface MainPresenter {
 
     void onDestroy();
 
+    void onForceRefresh();
+
+    void onItemSelected(RepositoryViewModel repository);
+
 }

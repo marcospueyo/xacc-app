@@ -1,29 +1,32 @@
 package com.mph.xaccapp.network;
 
 import com.google.gson.annotations.SerializedName;
+import com.mph.xaccapp.model.Repository;
 
 public class RestRepository {
 
     @SerializedName("id")
-    public String id;
+    private String id;
 
     @SerializedName("name")
-    public String name;
+    private String name;
 
     @SerializedName("description")
-    public String description;
+    private String description;
 
     @SerializedName("html_url")
-    public String htmlURL;
+    private String htmlURL;
+
+    @SerializedName("fork")
+    private Boolean fork;
 
     @SerializedName("owner")
-    public RestOwner owner;
+    private RestOwner owner;
 
 
     public RestRepository() {
 
     }
-
     public String getId() {
         return id;
     }
@@ -41,7 +44,7 @@ public class RestRepository {
     }
 
     public String getDescription() {
-        return description;
+        return description == null ? "" : description;
     }
 
     public void setDescription(String description) {
@@ -62,5 +65,13 @@ public class RestRepository {
 
     public void setOwner(RestOwner owner) {
         this.owner = owner;
+    }
+
+    public Boolean getFork() {
+        return fork;
+    }
+
+    public void setFork(Boolean fork) {
+        this.fork = fork;
     }
 }

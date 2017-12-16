@@ -28,18 +28,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class CCUtils {
 
-    public static void addFragmentToActivity (@NonNull FragmentManager fragmentManager,
-                                              @NonNull Fragment fragment, int frameId) {
+    public static void addFragmentToActivity(@NonNull FragmentManager fragmentManager,
+                                             @NonNull Fragment fragment, int frameId) {
         checkNotNull(fragmentManager);
         checkNotNull(fragment);
         fragmentManager.beginTransaction()
                 .replace(frameId, fragment)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .commit();
-    }
-
-    public static String getFormattedCheckout(final Context context, String date) {
-        return context.getString(R.string.checkout) + " " + date;
     }
 
     public static String getFormattedLastActivity(Date date) {
@@ -67,8 +63,8 @@ public class CCUtils {
                 int messageCount = adapter.getItemCount();
                 int lastVisiblePosition = layoutManager.findLastCompletelyVisibleItemPosition();
 
-                if (lastVisiblePosition == -1  || (positionStart >= (messageCount - 1)
-                        && lastVisiblePosition == (positionStart -1))) {
+                if (lastVisiblePosition == -1 || (positionStart >= (messageCount - 1)
+                        && lastVisiblePosition == (positionStart - 1))) {
                     recyclerView.smoothScrollToPosition(positionStart);
                 }
             }
@@ -92,27 +88,5 @@ public class CCUtils {
                     recyclerView.smoothScrollToPosition(adapter.getItemCount());
             }
         };
-    }
-
-
-    // TODO: 26/07/2017 Extend TextView with this method
-    public static void renderHighlighting(boolean isHighlighted, TextView textView) {
-        textView.setTypeface(null, isHighlighted ? BOLD : NORMAL);
-    }
-
-    public static void makeCall(final Activity activity, String phoneNumber) {
-        // TODO: 27/09/2017 Handle permission request response
-        int checkPermission = ContextCompat.checkSelfPermission(activity, "android.permission.CALL_PHONE");
-        if (checkPermission != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                    activity,
-                    new String[]{"android.permission.CALL_PHONE"},
-                    /*REQUEST_CALL_PHONE)*/ 0);
-        }
-        else {
-            Intent intent = new Intent(Intent.ACTION_CALL);
-            intent.setData(Uri.parse("tel:" + phoneNumber));
-            activity.startActivity(intent);
-        }
     }
 }
