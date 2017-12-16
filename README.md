@@ -1,5 +1,3 @@
-# Chatcontrol
-[![Build Status](https://travis-ci.org/marcospueyo/chat-core-clean.svg?branch=master)](https://travis-ci.org/marcospueyo/chat-core-clean)
-
+# XACC
 work in progress
 
