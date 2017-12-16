@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">Xing challenge</string>
     <string name="repo_load_error">An error occurred while trying to load the repositories</string>
+
+    <string name="open_repo_alert_text">Which website would you like to browse?</string>
+    <string name="repository">Repository</string>
+    <string name="owner">Owner</string>
+
+    <string-array name="open_repo_options">
+        <item>@string/repository</item>
+        <item>@string/owner</item>
+    </string-array>
 </resources>

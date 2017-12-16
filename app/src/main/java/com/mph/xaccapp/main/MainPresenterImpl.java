@@ -3,6 +3,7 @@ package com.mph.xaccapp.main;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.mph.xaccapp.Router;
 import com.mph.xaccapp.model.Repository;
 
 import java.util.List;
@@ -22,12 +23,16 @@ public class MainPresenterImpl implements MainPresenter {
     @NonNull
     private final RepositoryViewModelMapper mMapper;
 
+    @NonNull
+    private final Router mRouter;
+
     public MainPresenterImpl(@NonNull MainView view,
                              @NonNull GetRepositoriesInteractor getRepositoriesInteractor,
-                             @NonNull RepositoryViewModelMapper mapper) {
+                             @NonNull RepositoryViewModelMapper mapper, @NonNull Router router) {
         mView = view;
         mGetRepositoriesInteractor = getRepositoriesInteractor;
         mMapper = mapper;
+        mRouter = router;
     }
 
 
@@ -47,7 +52,7 @@ public class MainPresenterImpl implements MainPresenter {
 
     @Override
     public void onItemSelected(RepositoryViewModel repository) {
-        Log.d(TAG, "onItemSelected: " + repository.id());
+        mView.showDialogForRepository(repository);
     }
 
     @Override
@@ -70,5 +75,15 @@ public class MainPresenterImpl implements MainPresenter {
                 mView.showLoadError();
             }
         });
+    }
+
+    @Override
+    public void onOpenRepoUrlSelected(RepositoryViewModel repository) {
+        mRouter.openBrowser(repository.url());
+    }
+
+    @Override
+    public void onOpenOwnerUrlSelected(RepositoryViewModel repository) {
+        mRouter.openBrowser(repository.ownerUrl());
     }
 }

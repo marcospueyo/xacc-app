@@ -12,4 +12,8 @@ public interface MainPresenter {
 
     void onItemSelected(RepositoryViewModel repository);
 
+    void onOpenRepoUrlSelected(RepositoryViewModel repository);
+
+    void onOpenOwnerUrlSelected(RepositoryViewModel repository);
+
 }

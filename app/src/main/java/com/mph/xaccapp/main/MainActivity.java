@@ -1,9 +1,11 @@
 package com.mph.xaccapp.main;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,6 +13,8 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
 import com.mph.xaccapp.R;
+import com.mph.xaccapp.Router;
+import com.mph.xaccapp.RouterImpl;
 import com.mph.xaccapp.XACCApplication;
 import com.mph.xaccapp.network.GithubService;
 import com.mph.xaccapp.network.RestRepositoryMapper;
@@ -66,8 +70,7 @@ public class MainActivity extends AppCompatActivity implements MainView,
 
         EntityDataStore<Persistable> dataStore =  ((XACCApplication) getApplication()).getData();
 
-        RestRepositoryMapper mapper = new RestRepositoryMapper()
-                ;
+        RestRepositoryMapper mapper = new RestRepositoryMapper();
         RepoRepository repoRepository =
                 new RepoRepositoryImpl(repositoryService, dataStore, mapper);
 
@@ -76,8 +79,12 @@ public class MainActivity extends AppCompatActivity implements MainView,
 
         RepositoryViewModelMapper repositoryViewModelMapper = new RepositoryViewModelMapper();
 
+        Context context = this;
+
+        Router router = new RouterImpl(context);
+
         mPresenter = new MainPresenterImpl(this, getRepositoriesInteractor,
-                repositoryViewModelMapper);
+                repositoryViewModelMapper, router);
     }
 
     private void initListView() {
@@ -151,5 +158,26 @@ public class MainActivity extends AppCompatActivity implements MainView,
     public void showLoadError() {
         Snackbar.make(findViewById(android.R.id.content), getString(R.string.repo_load_error),
                 Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showDialogForRepository(final RepositoryViewModel repository) {
+        new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.open_repo_alert_text))
+                .setItems(getResources().getStringArray(R.array.open_repo_options),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                if (i == 0) {
+                                    mPresenter.onOpenRepoUrlSelected(repository);
+                                }
+                                else {
+                                    mPresenter.onOpenOwnerUrlSelected(repository);
+                                }
+
+                            }
+                        })
+                .setCancelable(true)
+                .show();
     }
 }

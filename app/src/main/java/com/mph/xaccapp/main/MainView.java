@@ -12,4 +12,6 @@ public interface MainView {
 
     void showLoadError();
 
+    void showDialogForRepository(RepositoryViewModel repository);
+
 }
