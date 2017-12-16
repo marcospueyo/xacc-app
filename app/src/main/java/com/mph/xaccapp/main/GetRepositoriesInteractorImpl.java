@@ -17,8 +17,9 @@ public class GetRepositoriesInteractorImpl implements GetRepositoriesInteractor 
     }
 
     @Override
-    public void execute(final OnFinishedListener listener) {
-        mRepoRepository.getRepos(new RepoRepository.GetReposListener() {
+    public void execute(int elementsPerPage, int page, final OnFinishedListener listener) {
+        mRepoRepository.getRepos(page, elementsPerPage,
+                new RepoRepository.GetReposListener() {
             @Override
             public void onReposLoaded(List<Repository> repositories) {
                 listener.onRepositoriesLoaded(repositories);

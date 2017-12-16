@@ -27,8 +27,10 @@ public class RepositoryServiceImpl implements RepositoryService {
     }
 
     @Override
-    public void getRepositories(final OnFetchCompletedListener listener) {
-        Call<List<RestRepository>> call = mGithubService.getUserRepos(mUserID);
+    public void getRepositories(int page, int reposPerPage, final OnFetchCompletedListener listener) {
+        int servicePage = page + 1; //page numbering is 1-based
+        Call<List<RestRepository>> call = mGithubService.getUserRepos(mUserID,
+                String.valueOf(servicePage), String.valueOf(reposPerPage));
         call.enqueue(new Callback<List<RestRepository>>() {
             @Override
             public void onResponse(Call<List<RestRepository>> call,

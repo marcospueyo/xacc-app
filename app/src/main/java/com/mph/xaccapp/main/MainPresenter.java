@@ -10,6 +10,8 @@ public interface MainPresenter {
 
     void onForceRefresh();
 
+    void onScrollDown();
+
     void onItemSelected(RepositoryViewModel repository);
 
     void onOpenRepoUrlSelected(RepositoryViewModel repository);

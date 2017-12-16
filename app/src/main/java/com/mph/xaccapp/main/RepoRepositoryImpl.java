@@ -1,7 +1,6 @@
 package com.mph.xaccapp.main;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.mph.xaccapp.model.Repository;
 import com.mph.xaccapp.network.RestRepository;
@@ -35,9 +34,16 @@ public class RepoRepositoryImpl implements RepoRepository {
     }
 
     @Override
-    public void getRepos(final GetReposListener listener) {
+    public void getRepos(GetReposListener listener) {
+
+    }
+
+    @Override
+    public void getRepos(int page, int maxCount, final GetReposListener listener) {
+//        listener.onReposLoaded(getLocalEntities(page, maxCount));
         if (shouldLoadFromRemoteStore()) {
-            mRepositoryService.getRepositories(new RepositoryService.OnFetchCompletedListener() {
+            mRepositoryService.getRepositories(page, maxCount,
+                    new RepositoryService.OnFetchCompletedListener() {
                 @Override
                 public void onRepositoriesFetched(List<RestRepository> restRepositories) {
                     List<Repository> repositories = mMapper.map(restRepositories);
@@ -53,20 +59,57 @@ public class RepoRepositoryImpl implements RepoRepository {
         }
     }
 
+    @Override
+    public void getRepos(int maxCount, final GetReposListener listener) {
+
+    }
+
     private boolean shouldLoadFromRemoteStore() {
         return true;
     }
 
+    private List<Repository> getLocalEntities(int page, int elementsPerPage) {
+        return mDataStore
+                .select(Repository.class)
+                .orderBy(Repository.NAME)
+                .limit(elementsPerPage)
+                .offset(page * elementsPerPage)
+                .get()
+                .toList();
+    }
+
+    private Repository getLocalEntity(String id) {
+        return mDataStore
+                .select(Repository.class)
+                .where(Repository.ID.eq(id))
+                .get()
+                .firstOrNull();
+    }
+
     private void saveFetchedEntities(Iterable<Repository> repositories) {
-        deleteEntities();
-        persistEntities(repositories);
+        rewriteEntities(repositories);
     }
 
-    private void deleteEntities() {
-        mDataStore.delete(Repository.class).get().value();
+    private void rewriteEntities(Iterable<Repository> repositories) {
+        for (Repository repository : repositories) {
+            rewriteEntity(repository);
+        }
     }
 
-    private void persistEntities(Iterable<Repository> repositories) {
-        mDataStore.insert(repositories);
+    private void rewriteEntity(Repository repository) {
+        deleteEntity(repository.getId());
+        persistEntity(repository);
+    }
+
+    private void persistEntity(Repository repository) {
+        mDataStore.insert(repository);
+    }
+
+    private void deleteEntity(String id) {
+        mDataStore
+                .delete(Repository.class)
+                .where(Repository.ID.eq(id))
+                .get()
+                .value();
     }
 }

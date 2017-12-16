@@ -6,6 +6,8 @@ public interface MainView {
 
     void showRepositories(List<RepositoryViewModel> repositories);
 
+    void addRepositories(List<RepositoryViewModel> repositories);
+
     void showProgress();
 
     void hideProgress();

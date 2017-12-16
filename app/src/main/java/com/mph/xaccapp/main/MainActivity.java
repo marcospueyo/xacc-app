@@ -42,6 +42,10 @@ public class MainActivity extends AppCompatActivity implements MainView,
 
     private RepositoryAdapter mAdapter;
 
+    private int mElementsPerPage;
+
+    private int mScrollThreshold;
+
     public static Intent newInstance(Context context) {
         return new Intent(context, MainActivity.class);
     }
@@ -65,6 +69,8 @@ public class MainActivity extends AppCompatActivity implements MainView,
         GithubService githubService = retrofit.create(GithubService.class);
 
         String userID = "xing";
+        mElementsPerPage = 10;
+        mScrollThreshold = 3;
 
         RepositoryService repositoryService = new RepositoryServiceImpl(githubService, userID);
 
@@ -84,16 +90,17 @@ public class MainActivity extends AppCompatActivity implements MainView,
         Router router = new RouterImpl(context);
 
         mPresenter = new MainPresenterImpl(this, getRepositoriesInteractor,
-                repositoryViewModelMapper, router);
+                repositoryViewModelMapper, router, mElementsPerPage);
     }
 
     private void initListView() {
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         initializeRecyclerView(layoutManager);
-        initializeAdapter(layoutManager);
+        initializeAdapter();
+        initScrollListener(mElementsPerPage, mScrollThreshold, layoutManager);
     }
 
-    private void initializeRecyclerView(LinearLayoutManager layoutManager) {
+    private void initializeRecyclerView(final LinearLayoutManager layoutManager) {
         layoutManager.setStackFromEnd(false);
         mListView.setLayoutManager(layoutManager);
         mListView.addItemDecoration(
@@ -101,9 +108,27 @@ public class MainActivity extends AppCompatActivity implements MainView,
         mListView.setHasFixedSize(true);
     }
 
-    private void initializeAdapter(LinearLayoutManager layoutManager) {
+    private void initializeAdapter() {
         mAdapter = new RepositoryAdapter(this, mPresenter);
         mListView.setAdapter(mAdapter);
+    }
+
+    private void initScrollListener(final int elementsPerPage, final int scrollThreshold,
+                                    final LinearLayoutManager layoutManager) {
+        mListView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                Log.d(TAG, "onScrollStateChanged: ");
+                int lastVisible = layoutManager.findLastCompletelyVisibleItemPosition();
+                int repoCount = mAdapter.getItemCount();
+                if (repoCount > (elementsPerPage - 1)
+                        && Math.abs(repoCount - lastVisible) < scrollThreshold) {
+                    Log.d(TAG, "onScrollStateChanged: should reload");
+                    mPresenter.onScrollDown();
+                }
+            }
+        });
     }
 
     private void setForceRefreshListener() {
@@ -141,7 +166,13 @@ public class MainActivity extends AppCompatActivity implements MainView,
     @Override
     public void showRepositories(List<RepositoryViewModel> repositories) {
         Log.d(TAG, "showRepositories: " + repositories.size());
-        mAdapter.updateItemList(repositories);
+        mAdapter.setItemList(repositories);
+    }
+
+    @Override
+    public void addRepositories(List<RepositoryViewModel> repositories) {
+        Log.d(TAG, "addRepositories: " + repositories.size());
+        mAdapter.addToItemList(repositories);
     }
 
     @Override

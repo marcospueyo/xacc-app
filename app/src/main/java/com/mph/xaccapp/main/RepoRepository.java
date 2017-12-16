@@ -16,4 +16,8 @@ public interface RepoRepository {
     }
 
     void getRepos(GetReposListener listener);
+
+    void getRepos(int maxCount, GetReposListener listener);
+
+    void getRepos(int page, int maxCount, GetReposListener listener);
 }

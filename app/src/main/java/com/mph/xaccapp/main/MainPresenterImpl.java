@@ -26,20 +26,30 @@ public class MainPresenterImpl implements MainPresenter {
     @NonNull
     private final Router mRouter;
 
+    private final int mReposPerPage;
+
+    private int mCurrentPage;
+
+    private boolean mFetchInProcess;
+
     public MainPresenterImpl(@NonNull MainView view,
                              @NonNull GetRepositoriesInteractor getRepositoriesInteractor,
-                             @NonNull RepositoryViewModelMapper mapper, @NonNull Router router) {
+                             @NonNull RepositoryViewModelMapper mapper, @NonNull Router router,
+                             int reposPerPage) {
         mView = view;
         mGetRepositoriesInteractor = getRepositoriesInteractor;
         mMapper = mapper;
         mRouter = router;
+        mReposPerPage = reposPerPage;
+
+        mFetchInProcess = false;
     }
 
 
     @Override
     public void onStart() {
         mView.showProgress();
-        loadRepositories();
+        cleanRefresh();
     }
 
     @Override
@@ -56,23 +66,48 @@ public class MainPresenterImpl implements MainPresenter {
     }
 
     @Override
-    public void onForceRefresh() {
-        loadRepositories();
+    public void onScrollDown() {
+        if (!mFetchInProcess) {
+            mView.showProgress();
+            loadRepositories(true);
+        }
     }
 
-    private void loadRepositories() {
-        mGetRepositoriesInteractor.execute(new GetRepositoriesInteractor.OnFinishedListener() {
+    @Override
+    public void onForceRefresh() {
+        cleanRefresh();
+    }
+
+    private void cleanRefresh() {
+        mCurrentPage = 0;
+        loadRepositories(false);
+    }
+
+
+    private void loadRepositories(final boolean concatOperation) {
+        mFetchInProcess = true;
+        mGetRepositoriesInteractor.execute(mReposPerPage, mCurrentPage,
+                new GetRepositoriesInteractor.OnFinishedListener() {
             @Override
             public void onRepositoriesLoaded(List<Repository> repositories) {
                 Log.d(TAG, "onRepositoriesLoaded: " + repositories.size());
                 mView.hideProgress();
-                mView.showRepositories(mMapper.reverseMap(repositories));
+                List<RepositoryViewModel> viewModels = mMapper.reverseMap(repositories);
+                if (concatOperation) {
+                    mView.addRepositories(viewModels);
+                }
+                else {
+                    mView.showRepositories(viewModels);
+                }
+                mCurrentPage++;
+                mFetchInProcess = false;
             }
 
             @Override
             public void onLoadError() {
                 mView.hideProgress();
                 mView.showLoadError();
+                mFetchInProcess = false;
             }
         });
     }

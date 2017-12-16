@@ -54,9 +54,13 @@ public class RepositoryAdapter extends RecyclerView.Adapter<RepositoryViewHolder
         return mItemList == null ? 0 : mItemList.size();
     }
 
-    public void updateItemList(List<RepositoryViewModel> collection) {
+    public void setItemList(List<RepositoryViewModel> models) {
         mItemList.clear();
-        mItemList.addAll(collection);
+        addToItemList(models);
+    }
+
+    public void addToItemList(List<RepositoryViewModel> models) {
+        mItemList.addAll(models);
         notifyDataSetChanged();
     }
 

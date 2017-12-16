@@ -15,5 +15,5 @@ public interface RepositoryService {
 
     }
 
-    void getRepositories(OnFetchCompletedListener listener);
+    void getRepositories(int page, int reposPerPage, OnFetchCompletedListener listener);
 }
