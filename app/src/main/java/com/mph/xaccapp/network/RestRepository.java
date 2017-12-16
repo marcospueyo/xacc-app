@@ -10,9 +10,15 @@ public class RestRepository {
     @SerializedName("name")
     public String name;
 
+    @SerializedName("description")
     public String description;
 
-    public String ownerLogin;
+    @SerializedName("html_url")
+    public String htmlURL;
+
+    @SerializedName("owner")
+    public RestOwner owner;
+
 
     public RestRepository() {
 
@@ -42,11 +48,19 @@ public class RestRepository {
         this.description = description;
     }
 
-    public String getOwnerLogin() {
-        return ownerLogin;
+    public String getHtmlURL() {
+        return htmlURL;
     }
 
-    public void setOwnerLogin(String ownerLogin) {
-        this.ownerLogin = ownerLogin;
+    public void setHtmlURL(String htmlURL) {
+        this.htmlURL = htmlURL;
+    }
+
+    public RestOwner getOwner() {
+        return owner;
+    }
+
+    public void setOwner(RestOwner owner) {
+        this.owner = owner;
     }
 }
