@@ -1,6 +1,6 @@
 package com.mph.xaccapp.di.application.module;
 
-import com.mph.xaccapp.network.GithubService;
+import com.mph.xaccapp.network.service.api.GithubService;
 
 import javax.inject.Singleton;
 

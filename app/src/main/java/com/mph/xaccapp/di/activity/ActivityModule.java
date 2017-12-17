@@ -3,30 +3,16 @@ package com.mph.xaccapp.di.activity;
 import android.app.Activity;
 import android.content.Context;
 
-import com.mph.xaccapp.Router;
-import com.mph.xaccapp.RouterImpl;
-import com.mph.xaccapp.XACCApplication;
-import com.mph.xaccapp.main.GetRepositoriesInteractor;
-import com.mph.xaccapp.main.GetRepositoriesInteractorImpl;
-import com.mph.xaccapp.main.MainPresenter;
-import com.mph.xaccapp.main.MainPresenterImpl;
-import com.mph.xaccapp.main.MainView;
-import com.mph.xaccapp.main.RepoRepository;
-import com.mph.xaccapp.main.RepoRepositoryImpl;
-import com.mph.xaccapp.main.RepositoryService;
-import com.mph.xaccapp.main.RepositoryServiceImpl;
-import com.mph.xaccapp.main.RepositoryViewModelMapper;
-import com.mph.xaccapp.network.GithubService;
-import com.mph.xaccapp.network.RestRepositoryMapper;
-
-import javax.inject.Singleton;
+import com.mph.xaccapp.presentation.navigation.Router;
+import com.mph.xaccapp.presentation.navigation.RouterImpl;
+import com.mph.xaccapp.interactor.GetRepositoriesInteractor;
+import com.mph.xaccapp.presentation.presenter.MainPresenter;
+import com.mph.xaccapp.presentation.presenter.MainPresenterImpl;
+import com.mph.xaccapp.presentation.view.MainView;
+import com.mph.xaccapp.presentation.mapper.RepositoryViewModelMapper;
 
 import dagger.Module;
 import dagger.Provides;
-import io.requery.Persistable;
-import io.requery.sql.EntityDataStore;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
 public class ActivityModule {

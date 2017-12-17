@@ -1,8 +1,8 @@
 package com.mph.xaccapp.di.application.module;
 
-import com.mph.xaccapp.main.GetRepositoriesInteractor;
-import com.mph.xaccapp.main.GetRepositoriesInteractorImpl;
-import com.mph.xaccapp.main.RepoRepository;
+import com.mph.xaccapp.interactor.GetRepositoriesInteractor;
+import com.mph.xaccapp.interactor.GetRepositoriesInteractorImpl;
+import com.mph.xaccapp.data.RepoRepository;
 
 import javax.inject.Singleton;
 

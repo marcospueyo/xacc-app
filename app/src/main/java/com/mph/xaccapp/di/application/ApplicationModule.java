@@ -6,7 +6,7 @@ import android.content.res.Resources;
 import com.mph.xaccapp.BuildConfig;
 import com.mph.xaccapp.XACCApplication;
 import com.mph.xaccapp.di.ForApplication;
-import com.mph.xaccapp.model.Models;
+import com.mph.xaccapp.data.model.Models;
 
 import javax.inject.Singleton;
 

@@ -1,9 +1,9 @@
 package com.mph.xaccapp.di.application.module;
 
-import com.mph.xaccapp.main.RepoRepository;
-import com.mph.xaccapp.main.RepoRepositoryImpl;
-import com.mph.xaccapp.main.RepositoryService;
-import com.mph.xaccapp.network.RestRepositoryMapper;
+import com.mph.xaccapp.data.RepoRepository;
+import com.mph.xaccapp.data.RepoRepositoryImpl;
+import com.mph.xaccapp.network.service.RepositoryService;
+import com.mph.xaccapp.network.mapper.RestRepositoryMapper;
 
 import javax.inject.Singleton;
 

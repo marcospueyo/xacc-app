@@ -1,7 +1,7 @@
 package com.mph.xaccapp.di.activity;
 
-import com.mph.xaccapp.main.MainActivity;
-import com.mph.xaccapp.main.MainPresenter;
+import com.mph.xaccapp.presentation.view.activity.MainActivity;
+import com.mph.xaccapp.presentation.presenter.MainPresenter;
 
 
 public interface ActivityComponentInjects {

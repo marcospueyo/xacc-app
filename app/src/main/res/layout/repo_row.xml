@@ -29,7 +29,9 @@
                 android:textColor="@color/gray_dark"
                 android:textSize="@dimen/textsize_medium"
                 android:layout_marginStart="@dimen/spacing_large"
-                android:layout_marginEnd="@dimen/spacing_medium"/>
+                android:layout_marginLeft="@dimen/spacing_large"
+                android:layout_marginEnd="@dimen/spacing_medium"
+                android:layout_marginRight="@dimen/spacing_medium"/>
             <android.support.v4.widget.Space
                 android:layout_width="0dp"
                 android:layout_height="@dimen/spacing_small" />
@@ -42,7 +44,8 @@
                 android:text="Owner login"
                 android:textColor="@color/gray_dark"
                 android:textSize="@dimen/textsize_small"
-                android:layout_marginStart="@dimen/spacing_large"/>
+                android:layout_marginStart="@dimen/spacing_large"
+                android:layout_marginLeft="@dimen/spacing_large"/>
             <android.support.v4.widget.Space
                 android:layout_width="0dp"
                 android:layout_height="@dimen/spacing_medium" />
@@ -56,7 +59,9 @@
                 android:textColor="@color/black"
                 android:textSize="@dimen/textsize_small"
                 android:layout_marginStart="@dimen/spacing_large"
-                android:layout_marginEnd="@dimen/spacing_medium"/>
+                android:layout_marginLeft="@dimen/spacing_large"
+                android:layout_marginEnd="@dimen/spacing_medium"
+                android:layout_marginRight="@dimen/spacing_medium"/>
             </LinearLayout>
     </LinearLayout>
 </FrameLayout>
