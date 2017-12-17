@@ -22,10 +22,6 @@ public interface RepoRepository {
         void onDeleteError();
     }
 
-    void getRepos(GetReposListener listener);
-
-    void getRepos(int maxCount, GetReposListener listener);
-
     void getRepos(int page, int maxCount, GetReposListener listener);
 
     void clearRepos(DeleteReposListener listener);

@@ -1,5 +1,6 @@
 package com.mph.xaccapp.di.application;
 
+import com.mph.xaccapp.di.application.module.DataModule;
 import com.mph.xaccapp.di.application.module.InteractorModule;
 import com.mph.xaccapp.di.application.module.MappersModule;
 import com.mph.xaccapp.di.application.module.NetworkModule;
@@ -12,5 +13,6 @@ public interface ApplicationComponentExposes extends
         NetworkModule.Exposes,
         ServiceModule.Exposes,
         RepositoryModule.Exposes,
-        InteractorModule.Exposes {
+        InteractorModule.Exposes,
+        DataModule.Exposes {
 }

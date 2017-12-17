@@ -2,6 +2,7 @@ package com.mph.xaccapp.di.application;
 
 
 import com.mph.xaccapp.XACCApplication;
+import com.mph.xaccapp.di.application.module.DataModule;
 import com.mph.xaccapp.di.application.module.InteractorModule;
 import com.mph.xaccapp.di.application.module.MappersModule;
 import com.mph.xaccapp.di.application.module.NetworkModule;
@@ -19,7 +20,8 @@ import dagger.Component;
         NetworkModule.class,
         ServiceModule.class,
         RepositoryModule.class,
-        InteractorModule.class
+        InteractorModule.class,
+        DataModule.class
 })
 public interface ApplicationComponent extends ApplicationComponentInjects,
         ApplicationComponentExposes {
@@ -35,6 +37,7 @@ public interface ApplicationComponent extends ApplicationComponentInjects,
                     .serviceModule(new ServiceModule())
                     .repositoryModule(new RepositoryModule())
                     .interactorModule(new InteractorModule())
+                    .dataModule(new DataModule())
                     .build();
         }
 
