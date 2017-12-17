@@ -75,12 +75,12 @@ public class ActivityModule {
 
         Router router = new RouterImpl(daggerActivity);
 
-//        RepositoryViewModelMapper repositoryViewModelMapper = new RepositoryViewModelMapper();
+        RepositoryViewModelMapper repositoryViewModelMapper = new RepositoryViewModelMapper();
 
 
 
-        final MainPresenter mainPresenter = new MainPresenterImpl((MainView) daggerActivity,
-                getRepositoriesInteractor, router, mElementsPerPage);
+        final MainPresenter mainPresenter = new MainPresenterImpl((MainView) daggerActivity, getRepositoriesInteractor,
+                repositoryViewModelMapper, router, mElementsPerPage);
         daggerActivity.getActivityComponent().inject(mainPresenter);
         return mainPresenter;
     }

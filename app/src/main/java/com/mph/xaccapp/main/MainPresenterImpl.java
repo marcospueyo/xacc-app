@@ -8,8 +8,6 @@ import com.mph.xaccapp.model.Repository;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class MainPresenterImpl implements MainPresenter {
@@ -22,7 +20,7 @@ public class MainPresenterImpl implements MainPresenter {
     @NonNull
     private final GetRepositoriesInteractor mGetRepositoriesInteractor;
 
-    @Inject
+    @NonNull
     RepositoryViewModelMapper mMapper;
 
     @NonNull
@@ -36,10 +34,11 @@ public class MainPresenterImpl implements MainPresenter {
 
     public MainPresenterImpl(@NonNull MainView view,
                              @NonNull GetRepositoriesInteractor getRepositoriesInteractor,
-                             @NonNull Router router,
+                             @NonNull RepositoryViewModelMapper mapper, @NonNull Router router,
                              int reposPerPage) {
         mView = view;
         mGetRepositoriesInteractor = getRepositoriesInteractor;
+        mMapper = mapper;
         mRouter = router;
         mReposPerPage = reposPerPage;
 
