@@ -49,7 +49,7 @@ public class MainPresenterImpl implements MainPresenter {
     @Override
     public void onStart() {
         mView.showProgress();
-        cleanRefresh();
+        cleanLoad(false);
     }
 
     @Override
@@ -69,24 +69,25 @@ public class MainPresenterImpl implements MainPresenter {
     public void onScrollDown() {
         if (!mFetchInProcess) {
             mView.showProgress();
-            loadRepositories(true);
+            loadRepositories(false, true);
         }
     }
 
     @Override
     public void onForceRefresh() {
-        cleanRefresh();
+        cleanLoad(true);
     }
 
-    private void cleanRefresh() {
+    private void cleanLoad(boolean forceRefresh) {
         mCurrentPage = 0;
-        loadRepositories(false);
+        loadRepositories(forceRefresh, false);
     }
 
 
-    private void loadRepositories(final boolean concatOperation) {
+    private void loadRepositories(final boolean forceRefresh, final boolean concatOperation) {
         mFetchInProcess = true;
-        mGetRepositoriesInteractor.execute(mReposPerPage, mCurrentPage,
+        final int prevPage = mCurrentPage;
+        mGetRepositoriesInteractor.execute(forceRefresh, mReposPerPage, mCurrentPage,
                 new GetRepositoriesInteractor.OnFinishedListener() {
             @Override
             public void onRepositoriesLoaded(List<Repository> repositories) {
@@ -99,7 +100,7 @@ public class MainPresenterImpl implements MainPresenter {
                 else {
                     mView.showRepositories(viewModels);
                 }
-                mCurrentPage++;
+                mCurrentPage = prevPage + 1;
                 mFetchInProcess = false;
             }
 

@@ -15,5 +15,5 @@ public interface GetRepositoriesInteractor {
 
     }
 
-    void execute(int elementsPerPage, int page, OnFinishedListener listener);
+    void execute(boolean forceRefresh, int elementsPerPage, int page, OnFinishedListener listener);
 }

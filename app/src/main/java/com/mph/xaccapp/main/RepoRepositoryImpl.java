@@ -1,6 +1,7 @@
 package com.mph.xaccapp.main;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.mph.xaccapp.model.Repository;
 import com.mph.xaccapp.network.RestRepository;
@@ -40,8 +41,8 @@ public class RepoRepositoryImpl implements RepoRepository {
 
     @Override
     public void getRepos(int page, int maxCount, final GetReposListener listener) {
-//        listener.onReposLoaded(getLocalEntities(page, maxCount));
-        if (shouldLoadFromRemoteStore()) {
+        if (shouldLoadFromRemoteStore(page, maxCount)) {
+            Log.d(TAG, "getRepos: Remote load");
             mRepositoryService.getRepositories(page, maxCount,
                     new RepositoryService.OnFetchCompletedListener() {
                 @Override
@@ -57,6 +58,10 @@ public class RepoRepositoryImpl implements RepoRepository {
                 }
             });
         }
+        else {
+            Log.d(TAG, "getRepos: Local load");
+            listener.onReposLoaded(getLocalEntities(page, maxCount));
+        }
     }
 
     @Override
@@ -64,14 +69,24 @@ public class RepoRepositoryImpl implements RepoRepository {
 
     }
 
-    private boolean shouldLoadFromRemoteStore() {
-        return true;
+    @Override
+    public void clearRepos(final DeleteReposListener listener) {
+        deleteAllEntities();
+        listener.onDeleteSuccess();
+    }
+
+    private boolean shouldLoadFromRemoteStore(int page, int elementsPerPage) {
+        return localRepoCount() < elementsPerPage * (page + 1);
+    }
+
+    private int localRepoCount() {
+        return mDataStore.count(Repository.class).get().value();
     }
 
     private List<Repository> getLocalEntities(int page, int elementsPerPage) {
         return mDataStore
                 .select(Repository.class)
-                .orderBy(Repository.NAME)
+                .orderBy(Repository.NAME.lower())
                 .limit(elementsPerPage)
                 .offset(page * elementsPerPage)
                 .get()
@@ -99,6 +114,10 @@ public class RepoRepositoryImpl implements RepoRepository {
     private void rewriteEntity(Repository repository) {
         deleteEntity(repository.getId());
         persistEntity(repository);
+    }
+
+    private void deleteAllEntities() {
+        mDataStore.delete(Repository.class).get().value();
     }
 
     private void persistEntity(Repository repository) {
