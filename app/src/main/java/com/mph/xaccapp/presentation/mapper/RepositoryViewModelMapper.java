@@ -1,6 +1,6 @@
 package com.mph.xaccapp.presentation.mapper;
 
-import com.mph.xaccapp.data.model.Repository;
+import com.mph.xaccapp.domain.data.model.Repository;
 import com.mph.xaccapp.presentation.model.RepositoryViewModel;
 import com.mph.xaccapp.utils.Mapper;
 

@@ -17,8 +17,6 @@ import java.util.List;
 
 public class RepositoryAdapter extends RecyclerView.Adapter<RepositoryViewHolder> {
 
-    public static final String TAG = "RepositoryAdapter";
-
     public static final int resID = R.layout.repo_row;
 
     @NonNull
@@ -47,13 +45,12 @@ public class RepositoryAdapter extends RecyclerView.Adapter<RepositoryViewHolder
 
     @Override
     public void onBindViewHolder(RepositoryViewHolder holder, int position) {
-        Log.d(TAG, "onBindViewHolder: ");
         holder.render(mItemList.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return mItemList == null ? 0 : mItemList.size();
+        return mItemList.size();
     }
 
     public void setItemList(List<RepositoryViewModel> models) {

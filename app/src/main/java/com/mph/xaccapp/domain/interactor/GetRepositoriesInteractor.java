@@ -1,7 +1,7 @@
-package com.mph.xaccapp.interactor;
+package com.mph.xaccapp.domain.interactor;
 
 
-import com.mph.xaccapp.data.model.Repository;
+import com.mph.xaccapp.domain.data.model.Repository;
 
 import java.util.List;
 

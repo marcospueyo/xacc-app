@@ -1,7 +1,7 @@
 package com.mph.xaccapp.di.application.module;
 
-import com.mph.xaccapp.data.RepoRepository;
-import com.mph.xaccapp.data.RepoRepositoryImpl;
+import com.mph.xaccapp.domain.data.RepoRepository;
+import com.mph.xaccapp.domain.data.RepoRepositoryImpl;
 import com.mph.xaccapp.network.service.RepositoryService;
 import com.mph.xaccapp.network.mapper.RestRepositoryMapper;
 

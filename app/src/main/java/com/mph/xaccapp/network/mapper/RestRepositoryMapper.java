@@ -1,6 +1,6 @@
 package com.mph.xaccapp.network.mapper;
 
-import com.mph.xaccapp.data.model.Repository;
+import com.mph.xaccapp.domain.data.model.Repository;
 import com.mph.xaccapp.network.model.RestRepository;
 import com.mph.xaccapp.utils.Mapper;
 

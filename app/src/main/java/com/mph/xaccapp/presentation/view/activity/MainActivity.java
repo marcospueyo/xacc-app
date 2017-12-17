@@ -30,9 +30,6 @@ import butterknife.ButterKnife;
 public class MainActivity extends DaggerActivity implements MainView,
         SwipeRefreshLayout.OnRefreshListener {
 
-    @SuppressWarnings("unused")
-    private static final String TAG = MainActivity.class.getSimpleName();
-
     @Inject
     MainPresenter mPresenter;
 
@@ -90,12 +87,10 @@ public class MainActivity extends DaggerActivity implements MainView,
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                Log.d(TAG, "onScrollStateChanged: ");
                 int lastVisible = layoutManager.findLastCompletelyVisibleItemPosition();
                 int repoCount = mAdapter.getItemCount();
                 if (repoCount > (elementsPerPage - 1)
                         && Math.abs(repoCount - lastVisible) < scrollThreshold) {
-                    Log.d(TAG, "onScrollStateChanged: should reload");
                     mPresenter.onScrollDown();
                 }
             }
@@ -136,13 +131,11 @@ public class MainActivity extends DaggerActivity implements MainView,
 
     @Override
     public void showRepositories(List<RepositoryViewModel> repositories) {
-        Log.d(TAG, "showRepositories: " + repositories.size());
         mAdapter.setItemList(repositories);
     }
 
     @Override
     public void addRepositories(List<RepositoryViewModel> repositories) {
-        Log.d(TAG, "addRepositories: " + repositories.size());
         mAdapter.addToItemList(repositories);
     }
 

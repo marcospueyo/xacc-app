@@ -1,7 +1,7 @@
-package com.mph.xaccapp.data;
+package com.mph.xaccapp.domain.data;
 
 
-import com.mph.xaccapp.data.model.Repository;
+import com.mph.xaccapp.domain.data.model.Repository;
 
 import java.util.List;
 

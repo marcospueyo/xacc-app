@@ -5,7 +5,7 @@ import android.content.Context;
 
 import com.mph.xaccapp.presentation.navigation.Router;
 import com.mph.xaccapp.presentation.navigation.RouterImpl;
-import com.mph.xaccapp.interactor.GetRepositoriesInteractor;
+import com.mph.xaccapp.domain.interactor.GetRepositoriesInteractor;
 import com.mph.xaccapp.presentation.presenter.MainPresenter;
 import com.mph.xaccapp.presentation.presenter.MainPresenterImpl;
 import com.mph.xaccapp.presentation.view.MainView;

@@ -4,8 +4,8 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.mph.xaccapp.presentation.navigation.Router;
-import com.mph.xaccapp.data.model.Repository;
-import com.mph.xaccapp.interactor.GetRepositoriesInteractor;
+import com.mph.xaccapp.domain.data.model.Repository;
+import com.mph.xaccapp.domain.interactor.GetRepositoriesInteractor;
 import com.mph.xaccapp.presentation.view.MainView;
 import com.mph.xaccapp.presentation.model.RepositoryViewModel;
 import com.mph.xaccapp.presentation.mapper.RepositoryViewModelMapper;
@@ -15,8 +15,6 @@ import java.util.List;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class MainPresenterImpl implements MainPresenter {
-
-    public static final String TAG = "MainPresenterImpl";
 
     @NonNull
     private final MainView mView;
@@ -95,7 +93,6 @@ public class MainPresenterImpl implements MainPresenter {
                 new GetRepositoriesInteractor.OnFinishedListener() {
             @Override
             public void onRepositoriesLoaded(List<Repository> repositories) {
-                Log.d(TAG, "onRepositoriesLoaded: " + repositories.size());
                 mView.hideProgress();
                 List<RepositoryViewModel> viewModels = mMapper.reverseMap(repositories);
                 if (concatOperation) {

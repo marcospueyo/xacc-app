@@ -1,10 +1,10 @@
-package com.mph.xaccapp.data;
+package com.mph.xaccapp.domain.data;
 
 import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.mph.xaccapp.network.service.RepositoryService;
-import com.mph.xaccapp.data.model.Repository;
+import com.mph.xaccapp.domain.data.model.Repository;
 import com.mph.xaccapp.network.model.RestRepository;
 import com.mph.xaccapp.network.mapper.RestRepositoryMapper;
 
@@ -15,8 +15,6 @@ import io.requery.sql.EntityDataStore;
 
 
 public class RepoRepositoryImpl implements RepoRepository {
-
-    public static final String TAG = "RepoRepositoryImpl";
 
     @NonNull
     private final RepositoryService mRepositoryService;
@@ -43,7 +41,6 @@ public class RepoRepositoryImpl implements RepoRepository {
     @Override
     public void getRepos(int page, int maxCount, final GetReposListener listener) {
         if (shouldLoadFromRemoteStore(page, maxCount)) {
-            Log.d(TAG, "getRepos: Remote load");
             mRepositoryService.getRepositories(page, maxCount,
                     new RepositoryService.OnFetchCompletedListener() {
                 @Override
@@ -60,7 +57,6 @@ public class RepoRepositoryImpl implements RepoRepository {
             });
         }
         else {
-            Log.d(TAG, "getRepos: Local load");
             listener.onReposLoaded(getLocalEntities(page, maxCount));
         }
     }

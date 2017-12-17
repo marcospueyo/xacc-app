@@ -1,4 +1,4 @@
-package com.mph.xaccapp.data.model;
+package com.mph.xaccapp.domain.data.model;
 
 import io.requery.Entity;
 import io.requery.Key;
