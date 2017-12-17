@@ -30,12 +30,12 @@ public class DatabaseImpl implements Database {
 
     private EntityDataStore<Persistable> getData(Context context) {
         if (dataStore == null) {
-            initDataSore(context);
+            initDataStore(context);
         }
         return dataStore;
     }
 
-    private void initDataSore(Context context) {
+    private void initDataStore(Context context) {
         DatabaseSource source = new DatabaseSource(context, Models.DEFAULT, 9);
         if (BuildConfig.DEBUG) {
             source.setTableCreationMode(TableCreationMode.DROP_CREATE);
@@ -51,6 +51,6 @@ public class DatabaseImpl implements Database {
 
     @Override
     public void clearDataStore() {
-        initDataSore(mContext);
+        initDataStore(mContext);
     }
 }

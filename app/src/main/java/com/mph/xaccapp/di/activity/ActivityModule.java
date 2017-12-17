@@ -19,6 +19,8 @@ import com.mph.xaccapp.main.RepositoryViewModelMapper;
 import com.mph.xaccapp.network.GithubService;
 import com.mph.xaccapp.network.RestRepositoryMapper;
 
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
 import io.requery.Persistable;
@@ -28,6 +30,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
 public class ActivityModule {
+
+    public static final int ELEMENTS_PER_PAGE = 10;
 
     private final DaggerActivity daggerActivity;
 
@@ -50,37 +54,18 @@ public class ActivityModule {
 
     @Provides
     @ActivityScope
-    MainPresenter provideMainPresenter() {
-        final Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.github.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        GithubService githubService = retrofit.create(GithubService.class);
+    Router provideRouter() {
+        return new RouterImpl(daggerActivity);
+    }
 
-        String userID = "xing";
-        int mElementsPerPage = 10;
-        int mScrollThreshold = 3;
-
-        RepositoryService repositoryService = new RepositoryServiceImpl(githubService, userID);
-
-
-        EntityDataStore<Persistable> dataStore =  ((XACCApplication) daggerActivity.getApplication()).getData();
-
-        RestRepositoryMapper mapper = new RestRepositoryMapper();
-        RepoRepository repoRepository =
-                new RepoRepositoryImpl(repositoryService, dataStore, mapper);
-
-        GetRepositoriesInteractor getRepositoriesInteractor =
-                new GetRepositoriesInteractorImpl(repoRepository);
-
-        Router router = new RouterImpl(daggerActivity);
-
-        RepositoryViewModelMapper repositoryViewModelMapper = new RepositoryViewModelMapper();
-
-
-
-        final MainPresenter mainPresenter = new MainPresenterImpl((MainView) daggerActivity, getRepositoriesInteractor,
-                repositoryViewModelMapper, router, mElementsPerPage);
+    @Provides
+    @ActivityScope
+    MainPresenter provideMainPresenter(RepositoryViewModelMapper repositoryViewModelMapper,
+                                       Router router,
+                                       GetRepositoriesInteractor getRepositoriesInteractor) {
+        final MainPresenter mainPresenter =
+                new MainPresenterImpl((MainView) daggerActivity, getRepositoriesInteractor,
+                repositoryViewModelMapper, router, ELEMENTS_PER_PAGE);
         daggerActivity.getActivityComponent().inject(mainPresenter);
         return mainPresenter;
     }
@@ -91,5 +76,6 @@ public class ActivityModule {
 
         @ForActivity
         Context context();
+
     }
 }
