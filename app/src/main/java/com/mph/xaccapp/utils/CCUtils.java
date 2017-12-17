@@ -1,37 +1,21 @@
 package com.mph.xaccapp.utils;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.TextView;
-
-import com.mph.xaccapp.R;
 
 import java.util.Date;
-
-import static android.graphics.Typeface.BOLD;
-import static android.graphics.Typeface.NORMAL;
-import static com.google.common.base.Preconditions.checkNotNull;
 
 
 public class CCUtils {
 
     public static void addFragmentToActivity(@NonNull FragmentManager fragmentManager,
                                              @NonNull Fragment fragment, int frameId) {
-        checkNotNull(fragmentManager);
-        checkNotNull(fragment);
         fragmentManager.beginTransaction()
                 .replace(frameId, fragment)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
