@@ -16,10 +16,14 @@ import com.mph.xaccapp.R;
 import com.mph.xaccapp.Router;
 import com.mph.xaccapp.RouterImpl;
 import com.mph.xaccapp.XACCApplication;
+import com.mph.xaccapp.di.activity.ActivityComponent;
+import com.mph.xaccapp.di.activity.DaggerActivity;
 import com.mph.xaccapp.network.GithubService;
 import com.mph.xaccapp.network.RestRepositoryMapper;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,13 +32,14 @@ import io.requery.sql.EntityDataStore;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MainActivity extends AppCompatActivity implements MainView,
+public class MainActivity extends DaggerActivity implements MainView,
         SwipeRefreshLayout.OnRefreshListener {
 
     @SuppressWarnings("unused")
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private MainPresenter mPresenter;
+    @Inject
+    MainPresenter mPresenter;
 
     @BindView(R.id.swipe_refresh_layout) SwipeRefreshLayout mSwipeRefreshLayout;
 
@@ -42,9 +47,9 @@ public class MainActivity extends AppCompatActivity implements MainView,
 
     private RepositoryAdapter mAdapter;
 
-    private int mElementsPerPage;
+    private static final int mElementsPerPage = 10;
 
-    private int mScrollThreshold;
+    private static final int mScrollThreshold = 3;
 
     public static Intent newInstance(Context context) {
         return new Intent(context, MainActivity.class);
@@ -55,42 +60,13 @@ public class MainActivity extends AppCompatActivity implements MainView,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
-        initPresenter();
         initListView();
         setForceRefreshListener();
     }
 
-    private void initPresenter() {
-        final Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.github.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        GithubService githubService = retrofit.create(GithubService.class);
-
-        String userID = "xing";
-        mElementsPerPage = 10;
-        mScrollThreshold = 3;
-
-        RepositoryService repositoryService = new RepositoryServiceImpl(githubService, userID);
-
-        EntityDataStore<Persistable> dataStore =  ((XACCApplication) getApplication()).getData();
-
-        RestRepositoryMapper mapper = new RestRepositoryMapper();
-        RepoRepository repoRepository =
-                new RepoRepositoryImpl(repositoryService, dataStore, mapper);
-
-        GetRepositoriesInteractor getRepositoriesInteractor =
-                new GetRepositoriesInteractorImpl(repoRepository);
-
-        RepositoryViewModelMapper repositoryViewModelMapper = new RepositoryViewModelMapper();
-
-        Context context = this;
-
-        Router router = new RouterImpl(context);
-
-        mPresenter = new MainPresenterImpl(this, getRepositoriesInteractor,
-                repositoryViewModelMapper, router, mElementsPerPage);
+    @Override
+    protected void inject(final ActivityComponent activityComponent) {
+        activityComponent.inject(this);
     }
 
     private void initListView() {
