@@ -8,7 +8,8 @@ import dagger.Component;
 @Component(
         dependencies = ApplicationComponent.class,
         modules = {
-                ActivityModule.class
+                ActivityModule.class,
+                ActivityPresenterModule.class
         }
 )
 public interface ActivityComponent extends ActivityComponentInjects, ActivityComponentExposes  {
@@ -21,6 +22,7 @@ public interface ActivityComponent extends ActivityComponentInjects, ActivityCom
                         return DaggerActivityComponent.builder()
                     .applicationComponent(applicationComponent)
                     .activityModule(new ActivityModule(daggerActivity))
+                    .activityPresenterModule(new ActivityPresenterModule(daggerActivity))
                     .build();
         }
 

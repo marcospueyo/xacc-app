@@ -17,7 +17,7 @@ import dagger.Provides;
 @Module
 public class ActivityModule {
 
-    public static final int ELEMENTS_PER_PAGE = 10;
+//    public static final int ELEMENTS_PER_PAGE = 10;
 
     private final DaggerActivity daggerActivity;
 
@@ -44,17 +44,21 @@ public class ActivityModule {
         return new RouterImpl(daggerActivity);
     }
 
-    @Provides
-    @ActivityScope
-    MainPresenter provideMainPresenter(RepositoryViewModelMapper repositoryViewModelMapper,
-                                       Router router,
-                                       GetRepositoriesInteractor getRepositoriesInteractor) {
-        final MainPresenter mainPresenter =
-                new MainPresenterImpl((MainView) daggerActivity, getRepositoriesInteractor,
-                repositoryViewModelMapper, router, ELEMENTS_PER_PAGE);
-        daggerActivity.getActivityComponent().inject(mainPresenter);
-        return mainPresenter;
-    }
+//    @Provides
+//    @ActivityScope
+//    MainPresenter provideMainPresenter(RepositoryViewModelMapper repositoryViewModelMapper,
+//                                       Router router,
+//                                       GetRepositoriesInteractor getRepositoriesInteractor) {
+//        final MainPresenter mainPresenter =
+//                new MainPresenterImpl(
+//                        (MainView) daggerActivity,
+//                        getRepositoriesInteractor,
+//                        repositoryViewModelMapper,
+//                        router,
+//                        ELEMENTS_PER_PAGE);
+//        daggerActivity.getActivityComponent().inject(mainPresenter);
+//        return mainPresenter;
+//    }
 
     public interface Exposes {
 
@@ -62,6 +66,8 @@ public class ActivityModule {
 
         @ForActivity
         Context context();
+
+        Router router();
 
     }
 }
