@@ -1,7 +1,6 @@
 package com.mph.xaccapp.presentation.presenter;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.mph.xaccapp.presentation.navigation.Router;
 import com.mph.xaccapp.domain.data.model.Repository;
@@ -11,8 +10,6 @@ import com.mph.xaccapp.presentation.model.RepositoryViewModel;
 import com.mph.xaccapp.presentation.mapper.RepositoryViewModelMapper;
 
 import java.util.List;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public class MainPresenterImpl implements MainPresenter {
 
