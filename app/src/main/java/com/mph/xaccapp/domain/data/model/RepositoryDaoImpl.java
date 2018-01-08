@@ -7,9 +7,7 @@ import java.util.List;
 import io.requery.Persistable;
 import io.requery.sql.EntityDataStore;
 
-/**
- * Created by Marcos on 17/12/2017.
- */
+/* Created by Marcos on 17/12/2017.*/
 
 public class RepositoryDaoImpl implements RepositoryDao {
 
