@@ -7,14 +7,22 @@ import com.mph.xaccapp.domain.data.model.Repository;
 
 import java.util.List;
 
+import io.reactivex.Scheduler;
+
 public class GetRepositoriesInteractorImpl implements GetRepositoriesInteractor {
 
     @NonNull
     private final RepoRepository mRepoRepository;
 
+    private final Scheduler mBackgroundThread;
+    private final Scheduler mMainThread;
 
-    public GetRepositoriesInteractorImpl(@NonNull RepoRepository repoRepository) {
+    public GetRepositoriesInteractorImpl(@NonNull RepoRepository repoRepository,
+                                         @NonNull Scheduler mainThread,
+                                         @NonNull Scheduler backgroundThread) {
         mRepoRepository = repoRepository;
+        mBackgroundThread = backgroundThread;
+        mMainThread = mainThread;
     }
 
     @Override
