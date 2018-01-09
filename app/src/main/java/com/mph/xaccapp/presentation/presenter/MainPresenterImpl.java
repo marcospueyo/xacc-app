@@ -1,6 +1,7 @@
 package com.mph.xaccapp.presentation.presenter;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.mph.xaccapp.presentation.navigation.Router;
 import com.mph.xaccapp.domain.data.model.Repository;
@@ -11,7 +12,12 @@ import com.mph.xaccapp.presentation.mapper.RepositoryViewModelMapper;
 
 import java.util.List;
 
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+
 public class MainPresenterImpl implements MainPresenter {
+
+    public static final String TAG = "MainPresenterImpl";
 
     @NonNull
     private final MainView mView;
@@ -86,10 +92,18 @@ public class MainPresenterImpl implements MainPresenter {
     private void loadRepositories(final boolean forceRefresh, final boolean concatOperation) {
         mFetchInProcess = true;
         final int prevPage = mCurrentPage;
-        mGetRepositoriesInteractor.execute(forceRefresh, mReposPerPage, mCurrentPage,
-                new GetRepositoriesInteractor.OnFinishedListener() {
+
+        mGetRepositoriesInteractor
+                .execute(forceRefresh, mReposPerPage, mCurrentPage)
+                .subscribe(new Observer<List<Repository>>() {
             @Override
-            public void onRepositoriesLoaded(List<Repository> repositories) {
+            public void onSubscribe(Disposable d) {
+                Log.d(TAG, "onSubscribe: ");
+            }
+
+            @Override
+            public void onNext(List<Repository> repositories) {
+                Log.d(TAG, "onNext: no. of repos =" + repositories.size());
                 mView.hideProgress();
                 List<RepositoryViewModel> viewModels = mMapper.reverseMap(repositories);
                 if (concatOperation) {
@@ -103,10 +117,16 @@ public class MainPresenterImpl implements MainPresenter {
             }
 
             @Override
-            public void onLoadError() {
+            public void onError(Throwable e) {
+                Log.d(TAG, "onError: ");
                 mView.hideProgress();
                 mView.showLoadError();
                 mFetchInProcess = false;
+            }
+
+            @Override
+            public void onComplete() {
+                Log.d(TAG, "onComplete: ");
             }
         });
     }
