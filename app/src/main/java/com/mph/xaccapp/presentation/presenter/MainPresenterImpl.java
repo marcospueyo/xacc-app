@@ -98,12 +98,10 @@ public class MainPresenterImpl implements MainPresenter {
                 .subscribe(new Observer<List<Repository>>() {
             @Override
             public void onSubscribe(Disposable d) {
-                Log.d(TAG, "onSubscribe: ");
             }
 
             @Override
             public void onNext(List<Repository> repositories) {
-                Log.d(TAG, "onNext: no. of repos =" + repositories.size());
                 mView.hideProgress();
                 List<RepositoryViewModel> viewModels = mMapper.reverseMap(repositories);
                 if (concatOperation) {
@@ -118,7 +116,6 @@ public class MainPresenterImpl implements MainPresenter {
 
             @Override
             public void onError(Throwable e) {
-                Log.d(TAG, "onError: ");
                 mView.hideProgress();
                 mView.showLoadError();
                 mFetchInProcess = false;
@@ -126,7 +123,6 @@ public class MainPresenterImpl implements MainPresenter {
 
             @Override
             public void onComplete() {
-                Log.d(TAG, "onComplete: ");
             }
         });
     }
