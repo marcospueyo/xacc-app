@@ -11,6 +11,13 @@ import com.mph.xaccapp.network.mapper.RestRepositoryMapper;
 
 import java.util.List;
 
+import io.reactivex.Completable;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Scheduler;
+import io.reactivex.Single;
+import io.reactivex.functions.Action;
 import io.requery.Persistable;
 import io.requery.sql.EntityDataStore;
 
@@ -26,12 +33,17 @@ public class RepoRepositoryImpl implements RepoRepository {
     @NonNull
     private final RestRepositoryMapper mMapper;
 
+    @NonNull
+    private final Scheduler mBackgroundThread;
+
     public RepoRepositoryImpl(@NonNull RepositoryService repositoryService,
                               @NonNull RepositoryDao repositoryDao,
-                              @NonNull RestRepositoryMapper mapper) {
+                              @NonNull RestRepositoryMapper mapper,
+                              @NonNull Scheduler backgroundThread) {
         mRepositoryService = repositoryService;
         mRepositoryDao = repositoryDao;
         mMapper = mapper;
+        mBackgroundThread = backgroundThread;
     }
 
     @Override
@@ -58,9 +70,51 @@ public class RepoRepositoryImpl implements RepoRepository {
     }
 
     @Override
+    public Observable<List<Repository>> getRepos(final int page, final int maxCount) {
+        return Observable.create(new ObservableOnSubscribe<List<Repository>>() {
+            @Override
+            public void subscribe(final ObservableEmitter<List<Repository>> emitter) throws Exception {
+                if (shouldLoadFromRemoteStore(page, maxCount)) {
+                    mRepositoryService.getRepositories(page, maxCount,
+                            new RepositoryService.OnFetchCompletedListener() {
+                                @Override
+                                public void onRepositoriesFetched(List<RestRepository> restRepositories) {
+                                    List<Repository> repositories = mMapper.map(restRepositories);
+                                    emitter.onNext(repositories);
+                                    emitter.onComplete();
+                                    saveFetchedEntities(repositories);
+                                }
+
+                                @Override
+                                public void onFetchFailed() {
+                                    emitter.onError(new Throwable("Error fetching repositories " +
+                                            "from repository service"));
+                                }
+                            });
+                }
+                else {
+                    emitter.onNext(getLocalEntities(page, maxCount));
+                    emitter.onComplete();
+                }
+            }
+        });
+    }
+
+    @Override
     public void clearRepos(final DeleteReposListener listener) {
         deleteAllEntities();
         listener.onDeleteSuccess();
+    }
+
+    @Override
+    public Completable clearRepos(final boolean forceRefresh) {
+        return Completable.fromAction(new Action() {
+            @Override
+            public void run() throws Exception {
+                if (forceRefresh)
+                    deleteAllEntities();
+            }
+        }).subscribeOn(mBackgroundThread);
     }
 
     private boolean shouldLoadFromRemoteStore(int page, int elementsPerPage) {

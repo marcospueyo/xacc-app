@@ -8,8 +8,6 @@ import com.mph.xaccapp.domain.data.model.Repository;
 import java.util.List;
 
 import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Scheduler;
 
 public class GetRepositoriesInteractorImpl implements GetRepositoriesInteractor {
@@ -17,7 +15,10 @@ public class GetRepositoriesInteractorImpl implements GetRepositoriesInteractor 
     @NonNull
     private final RepoRepository mRepoRepository;
 
+    @NonNull
     private final Scheduler mBackgroundThread;
+
+    @NonNull
     private final Scheduler mMainThread;
 
     public GetRepositoriesInteractorImpl(@NonNull RepoRepository repoRepository,
@@ -52,47 +53,11 @@ public class GetRepositoriesInteractorImpl implements GetRepositoriesInteractor 
     @Override
     public Observable<List<Repository>> execute(final boolean forceRefresh,
                                                 final int elementsPerPage, final int page) {
-        return Observable
-                .create(new ObservableOnSubscribe<List<Repository>>() {
-            @Override
-            public void subscribe(final ObservableEmitter<List<Repository>> emitter) throws Exception {
-                if (forceRefresh) {
-                    mRepoRepository.clearRepos(new RepoRepository.DeleteReposListener() {
-                        @Override
-                        public void onDeleteSuccess() {
-                            getRepos(page, elementsPerPage, emitter);
-                        }
-
-                        @Override
-                        public void onDeleteError() {
-
-                        }
-                    });
-                }
-                else {
-                    getRepos(page, elementsPerPage, emitter);
-                }
-            }
-        })
+        return mRepoRepository
+                .clearRepos(forceRefresh)
+                .andThen(mRepoRepository.getRepos(page, elementsPerPage))
                 .subscribeOn(mBackgroundThread)
                 .observeOn(mMainThread);
-    }
-
-    private void getRepos(int page, int elementsPerPage,
-                          final ObservableEmitter<List<Repository>> emitter) {
-        mRepoRepository.getRepos(page, elementsPerPage,
-                new RepoRepository.GetReposListener() {
-                    @Override
-                    public void onReposLoaded(List<Repository> repositories) {
-                        emitter.onNext(repositories);
-                        emitter.onComplete();
-                    }
-
-                    @Override
-                    public void onDataNotAvailable() {
-                        emitter.onError(null);
-                    }
-                });
     }
 
     private void getRepos(int elementsPerPage, int page, final OnFinishedListener listener) {
