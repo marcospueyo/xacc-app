@@ -27,7 +27,7 @@ public interface RepoRepository {
 
     void getRepos(int page, int maxCount, GetReposListener listener);
 
-    Observable<List<Repository>> getRepos(int page, int maxCount);
+    Observable<List<Repository>> getRepos(final boolean mustFetchFromRemote, int page, int maxCount);
 
     void clearRepos(DeleteReposListener listener);
 

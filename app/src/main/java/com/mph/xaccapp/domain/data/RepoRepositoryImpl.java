@@ -15,9 +15,13 @@ import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.ObservableSource;
+import io.reactivex.ObservableTransformer;
+import io.reactivex.Observer;
 import io.reactivex.Scheduler;
 import io.reactivex.Single;
 import io.reactivex.functions.Action;
+import io.reactivex.functions.Function;
 import io.requery.Persistable;
 import io.requery.sql.EntityDataStore;
 
@@ -69,35 +73,34 @@ public class RepoRepositoryImpl implements RepoRepository {
         }
     }
 
-    @Override
-    public Observable<List<Repository>> getRepos(final int page, final int maxCount) {
-        return Observable.create(new ObservableOnSubscribe<List<Repository>>() {
+    private Function<List<Repository>, List<Repository>> saveFetchedEntities() {
+        return new Function<List<Repository>, List<Repository>>() {
             @Override
-            public void subscribe(final ObservableEmitter<List<Repository>> emitter) throws Exception {
-                if (shouldLoadFromRemoteStore(page, maxCount)) {
-                    mRepositoryService.getRepositories(page, maxCount,
-                            new RepositoryService.OnFetchCompletedListener() {
-                                @Override
-                                public void onRepositoriesFetched(List<RestRepository> restRepositories) {
-                                    List<Repository> repositories = mMapper.map(restRepositories);
-                                    emitter.onNext(repositories);
-                                    emitter.onComplete();
-                                    saveFetchedEntities(repositories);
-                                }
-
-                                @Override
-                                public void onFetchFailed() {
-                                    emitter.onError(new Throwable("Error fetching repositories " +
-                                            "from repository service"));
-                                }
-                            });
-                }
-                else {
-                    emitter.onNext(getLocalEntities(page, maxCount));
-                    emitter.onComplete();
-                }
+            public List<Repository> apply(List<Repository> repositories) throws Exception {
+                saveFetchedEntities(repositories);
+                return repositories;
             }
-        });
+        };
+    }
+
+    public Observable<List<Repository>> fetchFromRemoteStore(final int page, final int maxCount) {
+        return mRepositoryService
+                .getRepositories(page, maxCount)
+                .map(mMapper.map());
+    }
+
+    public Observable<List<Repository>> fetchReposFromProperStore(final int page,
+                                                                  final int maxCount) {
+        return shouldLoadFromRemoteStore(page, maxCount)
+                ? fetchFromRemoteStore(page, maxCount) : getLocalEntitiesObservable(page, maxCount);
+    }
+
+    @Override
+    public Observable<List<Repository>> getRepos(final boolean mustFetchFromRemote, final int page,
+                                                 final int maxCount) {
+        return clearRepos(mustFetchFromRemote)
+                .andThen(fetchReposFromProperStore(page, maxCount))
+                .map(saveFetchedEntities());
     }
 
     @Override
@@ -114,7 +117,7 @@ public class RepoRepositoryImpl implements RepoRepository {
                 if (forceRefresh)
                     deleteAllEntities();
             }
-        }).subscribeOn(mBackgroundThread);
+        });
     }
 
     private boolean shouldLoadFromRemoteStore(int page, int elementsPerPage) {
@@ -127,6 +130,17 @@ public class RepoRepositoryImpl implements RepoRepository {
 
     private List<Repository> getLocalEntities(int page, int elementsPerPage) {
         return mRepositoryDao.getRepositories(page, elementsPerPage);
+    }
+
+    private Observable<List<Repository>> getLocalEntitiesObservable(final int page,
+                                                                    final int elementsPerPage) {
+        return Observable.create(new ObservableOnSubscribe<List<Repository>>() {
+            @Override
+            public void subscribe(ObservableEmitter<List<Repository>> emitter) throws Exception {
+                emitter.onNext(mRepositoryDao.getRepositories(page, elementsPerPage));
+                emitter.onComplete();
+            }
+        });
     }
 
     private void saveFetchedEntities(Iterable<Repository> repositories) {
