@@ -10,26 +10,7 @@ import io.reactivex.Observable;
 
 public interface RepoRepository {
 
-    interface GetReposListener {
-
-        void onReposLoaded(List<Repository> repositories);
-
-        void onDataNotAvailable();
-
-    }
-
-    interface DeleteReposListener {
-
-        void onDeleteSuccess();
-
-        void onDeleteError();
-    }
-
-    void getRepos(int page, int maxCount, GetReposListener listener);
-
     Observable<List<Repository>> getRepos(final boolean mustFetchFromRemote, int page, int maxCount);
-
-    void clearRepos(DeleteReposListener listener);
 
     Completable clearRepos(boolean forceRefresh);
 

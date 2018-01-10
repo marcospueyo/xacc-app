@@ -50,29 +50,6 @@ public class RepoRepositoryImpl implements RepoRepository {
         mBackgroundThread = backgroundThread;
     }
 
-    @Override
-    public void getRepos(int page, int maxCount, final GetReposListener listener) {
-        if (shouldLoadFromRemoteStore(false, page, maxCount)) {
-            mRepositoryService.getRepositories(page, maxCount,
-                    new RepositoryService.OnFetchCompletedListener() {
-                @Override
-                public void onRepositoriesFetched(List<RestRepository> restRepositories) {
-                    List<Repository> repositories = mMapper.map(restRepositories);
-                    saveFetchedEntities(repositories);
-                    listener.onReposLoaded(repositories);
-                }
-
-                @Override
-                public void onFetchFailed() {
-                    listener.onDataNotAvailable();
-                }
-            });
-        }
-        else {
-            listener.onReposLoaded(getLocalEntities(page, maxCount));
-        }
-    }
-
     private Function<List<Repository>, List<Repository>> saveFetchedEntities() {
         return new Function<List<Repository>, List<Repository>>() {
             @Override
@@ -105,12 +82,6 @@ public class RepoRepositoryImpl implements RepoRepository {
     }
 
     @Override
-    public void clearRepos(final DeleteReposListener listener) {
-        deleteAllEntities();
-        listener.onDeleteSuccess();
-    }
-
-    @Override
     public Completable clearRepos(final boolean forceRefresh) {
         return Completable.fromAction(new Action() {
             @Override
@@ -128,10 +99,6 @@ public class RepoRepositoryImpl implements RepoRepository {
 
     private int localRepoCount() {
         return mRepositoryDao.getRepositoryCount();
-    }
-
-    private List<Repository> getLocalEntities(int page, int elementsPerPage) {
-        return mRepositoryDao.getRepositories(page, elementsPerPage);
     }
 
     private Observable<List<Repository>> getLocalEntitiesObservable(final int page,
