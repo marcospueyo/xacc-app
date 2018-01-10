@@ -74,7 +74,6 @@ public class RepoRepositoryImpl implements RepoRepository {
 
     @Override
     public Observable<List<Repository>> getRepoPage(int page, int maxCount) {
-//        return fetchFromRemoteStore(page, maxCount);
         return getLocalEntitiesObservable(page, maxCount);
     }
 

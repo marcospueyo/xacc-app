@@ -57,9 +57,8 @@ public final class RepoRepositoryImplTest {
     public void shouldLoadLocalRepos() throws Exception {
         when(mRepositoryDao.getRepositoryCount()).thenReturn(21);
 
-        mRepoRepositoryImpl.getLocalRepos(false, 1, 10);
+        mRepoRepositoryImpl.getRepoPage(1, 10);
 
-        verify(mRepositoryDao, times(1)).getRepositoryCount();
         verify(mRepositoryDao, times(1))
                 .getRepositories(page, elementsPerPage);
         verifyNoMoreInteractions(mRepositoryDao);
@@ -70,9 +69,8 @@ public final class RepoRepositoryImplTest {
     public void shouldLoadRemoteRepos() throws Exception {
         when(mRepositoryDao.getRepositoryCount()).thenReturn(0);
 
-        mRepoRepositoryImpl.getLocalRepos(true, page, elementsPerPage);
+        mRepoRepositoryImpl.getRepoPage(page, elementsPerPage);
 
-        verify(mRepositoryDao, times(1)).getRepositoryCount();
         verify(mRepositoryService, times(1))
                 .getRepositories(eq(page), eq(elementsPerPage));
         verifyNoMoreInteractions(mRepositoryDao);
