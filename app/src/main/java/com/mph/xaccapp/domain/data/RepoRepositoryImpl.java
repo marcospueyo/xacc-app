@@ -52,7 +52,7 @@ public class RepoRepositoryImpl implements RepoRepository {
 
     @Override
     public void getRepos(int page, int maxCount, final GetReposListener listener) {
-        if (shouldLoadFromRemoteStore(page, maxCount)) {
+        if (shouldLoadFromRemoteStore(false, page, maxCount)) {
             mRepositoryService.getRepositories(page, maxCount,
                     new RepositoryService.OnFetchCompletedListener() {
                 @Override
@@ -83,15 +83,16 @@ public class RepoRepositoryImpl implements RepoRepository {
         };
     }
 
-    public Observable<List<Repository>> fetchFromRemoteStore(final int page, final int maxCount) {
+    private Observable<List<Repository>> fetchFromRemoteStore(final int page, final int maxCount) {
         return mRepositoryService
                 .getRepositories(page, maxCount)
                 .map(mMapper.map());
     }
 
-    public Observable<List<Repository>> fetchReposFromProperStore(final int page,
+    private Observable<List<Repository>> fetchReposFromProperStore(final boolean mustFetchFromRemote,
+                                                                   final int page,
                                                                   final int maxCount) {
-        return shouldLoadFromRemoteStore(page, maxCount)
+        return shouldLoadFromRemoteStore(mustFetchFromRemote, page, maxCount)
                 ? fetchFromRemoteStore(page, maxCount) : getLocalEntitiesObservable(page, maxCount);
     }
 
@@ -99,7 +100,7 @@ public class RepoRepositoryImpl implements RepoRepository {
     public Observable<List<Repository>> getRepos(final boolean mustFetchFromRemote, final int page,
                                                  final int maxCount) {
         return clearRepos(mustFetchFromRemote)
-                .andThen(fetchReposFromProperStore(page, maxCount))
+                .andThen(fetchReposFromProperStore(mustFetchFromRemote, page, maxCount))
                 .map(saveFetchedEntities());
     }
 
@@ -120,8 +121,9 @@ public class RepoRepositoryImpl implements RepoRepository {
         });
     }
 
-    private boolean shouldLoadFromRemoteStore(int page, int elementsPerPage) {
-        return localRepoCount() < elementsPerPage * (page + 1);
+    private boolean shouldLoadFromRemoteStore(boolean mustFetchFromRemote, int page,
+                                              int elementsPerPage) {
+        return mustFetchFromRemote || ( localRepoCount() < elementsPerPage * (page + 1) );
     }
 
     private int localRepoCount() {
