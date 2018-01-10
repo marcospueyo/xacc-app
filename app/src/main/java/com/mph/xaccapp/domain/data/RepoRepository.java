@@ -10,8 +10,14 @@ import io.reactivex.Observable;
 
 public interface RepoRepository {
 
-    Observable<List<Repository>> getRepos(final boolean mustFetchFromRemote, int page, int maxCount);
+    Observable<List<Repository>> getAll();
 
-    Completable clearRepos(boolean forceRefresh);
+    Observable<List<Repository>> getRepoPage(int page, int maxCount);
+
+    Completable fetchRemoteRepos(int page, int maxCount);
+
+    Completable clearRepos();
+
+    int localRepoCount();
 
 }

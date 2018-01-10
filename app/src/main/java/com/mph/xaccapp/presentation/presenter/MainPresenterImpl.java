@@ -112,7 +112,9 @@ public class MainPresenterImpl implements MainPresenter {
                 else {
                     mView.showRepositories(viewModels);
                 }
-                mCurrentPage = prevPage + 1;
+                if (repositories.size() > 0) {
+                    mCurrentPage = prevPage + 1;
+                }
                 mFetchInProcess = false;
             }
 

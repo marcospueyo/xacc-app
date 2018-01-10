@@ -30,30 +30,6 @@ public class RepositoryServiceImpl implements RepositoryService {
     }
 
     @Override
-    public void getRepositories(int page, int reposPerPage, final OnFetchCompletedListener listener) {
-        int servicePage = page + 1; //page numbering is 1-based
-        Call<List<RestRepository>> call = mGithubService.getUserRepos(mUserID,
-                String.valueOf(servicePage), String.valueOf(reposPerPage));
-        call.enqueue(new Callback<List<RestRepository>>() {
-            @Override
-            public void onResponse(Call<List<RestRepository>> call,
-                                   Response<List<RestRepository>> response) {
-                if (response.isSuccessful()) {
-                    listener.onRepositoriesFetched(response.body());
-                }
-                else {
-                    handleFetchFailed(listener);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<RestRepository>> call, Throwable t) {
-                handleFetchFailed(listener);
-            }
-        });
-    }
-
-    @Override
     public Observable<List<RestRepository>> getRepositories(final int page, final int reposPerPage) {
         return Observable.create(new ObservableOnSubscribe<List<RestRepository>>() {
             @Override
@@ -81,10 +57,6 @@ public class RepositoryServiceImpl implements RepositoryService {
                 });
             }
         });
-    }
-
-    private void handleFetchFailed(OnFetchCompletedListener listener) {
-        listener.onFetchFailed();
     }
 
     private void handleFetchFailed(ObservableEmitter<List<RestRepository>> emitter) {

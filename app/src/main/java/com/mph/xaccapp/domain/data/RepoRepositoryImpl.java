@@ -12,6 +12,7 @@ import com.mph.xaccapp.network.mapper.RestRepositoryMapper;
 import java.util.List;
 
 import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -66,38 +67,36 @@ public class RepoRepositoryImpl implements RepoRepository {
                 .map(mMapper.map());
     }
 
-    private Observable<List<Repository>> fetchReposFromProperStore(final boolean mustFetchFromRemote,
-                                                                   final int page,
-                                                                  final int maxCount) {
-        return shouldLoadFromRemoteStore(mustFetchFromRemote, page, maxCount)
-                ? fetchFromRemoteStore(page, maxCount) : getLocalEntitiesObservable(page, maxCount);
+    @Override
+    public Observable<List<Repository>> getAll() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public Observable<List<Repository>> getRepos(final boolean mustFetchFromRemote, final int page,
-                                                 final int maxCount) {
-        return clearRepos(mustFetchFromRemote)
-                .andThen(fetchReposFromProperStore(mustFetchFromRemote, page, maxCount))
-                .map(saveFetchedEntities());
+    public Observable<List<Repository>> getRepoPage(int page, int maxCount) {
+//        return fetchFromRemoteStore(page, maxCount);
+        return getLocalEntitiesObservable(page, maxCount);
     }
 
     @Override
-    public Completable clearRepos(final boolean forceRefresh) {
+    public Completable fetchRemoteRepos(final int page, final int maxCount) {
+        return Completable.fromObservable(
+                fetchFromRemoteStore(page, maxCount)
+                        .map(saveFetchedEntities()));
+    }
+
+    @Override
+    public Completable clearRepos() {
         return Completable.fromAction(new Action() {
             @Override
             public void run() throws Exception {
-                if (forceRefresh)
                     deleteAllEntities();
             }
         });
     }
 
-    private boolean shouldLoadFromRemoteStore(boolean mustFetchFromRemote, int page,
-                                              int elementsPerPage) {
-        return mustFetchFromRemote || ( localRepoCount() < elementsPerPage * (page + 1) );
-    }
-
-    private int localRepoCount() {
+    @Override
+    public int localRepoCount() {
         return mRepositoryDao.getRepositoryCount();
     }
 
