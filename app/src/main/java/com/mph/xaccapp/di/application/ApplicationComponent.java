@@ -8,6 +8,7 @@ import com.mph.xaccapp.di.application.module.MappersModule;
 import com.mph.xaccapp.di.application.module.NetworkModule;
 import com.mph.xaccapp.di.application.module.RepositoryModule;
 import com.mph.xaccapp.di.application.module.ServiceModule;
+import com.mph.xaccapp.di.application.module.ThreadingModule;
 
 import javax.inject.Singleton;
 
@@ -21,7 +22,8 @@ import dagger.Component;
         ServiceModule.class,
         RepositoryModule.class,
         InteractorModule.class,
-        DataModule.class
+        DataModule.class,
+        ThreadingModule.class
 })
 public interface ApplicationComponent extends ApplicationComponentInjects,
         ApplicationComponentExposes {
@@ -38,6 +40,7 @@ public interface ApplicationComponent extends ApplicationComponentInjects,
                     .repositoryModule(new RepositoryModule())
                     .interactorModule(new InteractorModule())
                     .dataModule(new DataModule())
+                    .threadingModule(new ThreadingModule())
                     .build();
         }
 

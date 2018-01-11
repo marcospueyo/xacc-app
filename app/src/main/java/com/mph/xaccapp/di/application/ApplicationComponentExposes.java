@@ -6,6 +6,7 @@ import com.mph.xaccapp.di.application.module.MappersModule;
 import com.mph.xaccapp.di.application.module.NetworkModule;
 import com.mph.xaccapp.di.application.module.RepositoryModule;
 import com.mph.xaccapp.di.application.module.ServiceModule;
+import com.mph.xaccapp.di.application.module.ThreadingModule;
 
 public interface ApplicationComponentExposes extends
         ApplicationModule.Exposes,
@@ -14,5 +15,6 @@ public interface ApplicationComponentExposes extends
         ServiceModule.Exposes,
         RepositoryModule.Exposes,
         InteractorModule.Exposes,
-        DataModule.Exposes {
+        DataModule.Exposes,
+        ThreadingModule.Exposes {
 }

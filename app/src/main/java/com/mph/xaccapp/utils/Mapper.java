@@ -3,6 +3,8 @@ package com.mph.xaccapp.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.functions.Function;
+
 public abstract class Mapper<T1, T2> {
 
     public abstract T2 map(T1 value);
@@ -23,5 +25,14 @@ public abstract class Mapper<T1, T2> {
             returnValues.add(reverseMap(value));
         }
         return returnValues;
+    }
+
+    public Function<List<T1>, List<T2>> map() {
+        return new Function<List<T1>, List<T2>>() {
+            @Override
+            public List<T2> apply(List<T1> t1s) throws Exception {
+                return map(t1s);
+            }
+        };
     }
 }

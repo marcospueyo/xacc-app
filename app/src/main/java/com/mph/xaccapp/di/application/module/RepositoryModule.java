@@ -6,10 +6,14 @@ import com.mph.xaccapp.domain.data.model.RepositoryDao;
 import com.mph.xaccapp.network.service.RepositoryService;
 import com.mph.xaccapp.network.mapper.RestRepositoryMapper;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import io.reactivex.Scheduler;
+
+import static com.mph.xaccapp.di.application.module.ThreadingModule.BACKGROUND_SCHEDULER;
 
 
 @Module
@@ -19,8 +23,9 @@ public final class RepositoryModule {
     @Singleton
     RepoRepository provideRepoRepository(RepositoryService repositoryService,
                                          RepositoryDao repositoryDao,
-                                         RestRepositoryMapper mapper) {
-        return new RepoRepositoryImpl(repositoryService, repositoryDao, mapper);
+                                         RestRepositoryMapper mapper,
+                                         @Named(BACKGROUND_SCHEDULER) Scheduler scheduler) {
+        return new RepoRepositoryImpl(repositoryService, repositoryDao, mapper, scheduler);
     }
 
     public interface Exposes {

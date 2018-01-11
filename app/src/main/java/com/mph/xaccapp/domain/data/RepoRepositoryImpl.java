@@ -11,6 +11,18 @@ import com.mph.xaccapp.network.mapper.RestRepositoryMapper;
 
 import java.util.List;
 
+import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.ObservableSource;
+import io.reactivex.ObservableTransformer;
+import io.reactivex.Observer;
+import io.reactivex.Scheduler;
+import io.reactivex.Single;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Function;
 import io.requery.Persistable;
 import io.requery.sql.EntityDataStore;
 
@@ -26,79 +38,77 @@ public class RepoRepositoryImpl implements RepoRepository {
     @NonNull
     private final RestRepositoryMapper mMapper;
 
+    @NonNull
+    private final Scheduler mBackgroundThread;
+
     public RepoRepositoryImpl(@NonNull RepositoryService repositoryService,
                               @NonNull RepositoryDao repositoryDao,
-                              @NonNull RestRepositoryMapper mapper) {
+                              @NonNull RestRepositoryMapper mapper,
+                              @NonNull Scheduler backgroundThread) {
         mRepositoryService = repositoryService;
         mRepositoryDao = repositoryDao;
         mMapper = mapper;
+        mBackgroundThread = backgroundThread;
+    }
+
+    private Function<List<Repository>, List<Repository>> saveFetchedEntities() {
+        return new Function<List<Repository>, List<Repository>>() {
+            @Override
+            public List<Repository> apply(List<Repository> repositories) throws Exception {
+                saveFetchedEntities(repositories);
+                return repositories;
+            }
+        };
+    }
+
+    private Observable<List<Repository>> fetchFromRemoteStore(final int page, final int maxCount) {
+        return mRepositoryService
+                .getRepositories(page, maxCount)
+                .map(mMapper.map());
     }
 
     @Override
-    public void getRepos(int page, int maxCount, final GetReposListener listener) {
-        if (shouldLoadFromRemoteStore(page, maxCount)) {
-            mRepositoryService.getRepositories(page, maxCount,
-                    new RepositoryService.OnFetchCompletedListener() {
-                @Override
-                public void onRepositoriesFetched(List<RestRepository> restRepositories) {
-                    List<Repository> repositories = mMapper.map(restRepositories);
-                    saveFetchedEntities(repositories);
-                    listener.onReposLoaded(repositories);
-                }
-
-                @Override
-                public void onFetchFailed() {
-                    listener.onDataNotAvailable();
-                }
-            });
-        }
-        else {
-            listener.onReposLoaded(getLocalEntities(page, maxCount));
-        }
+    public Observable<List<Repository>> getAll() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void clearRepos(final DeleteReposListener listener) {
-        deleteAllEntities();
-        listener.onDeleteSuccess();
+    public Observable<List<Repository>> getRepoPage(int page, int maxCount) {
+        return getLocalEntitiesObservable(page, maxCount);
     }
 
-    private boolean shouldLoadFromRemoteStore(int page, int elementsPerPage) {
-        return localRepoCount() < elementsPerPage * (page + 1);
+    @Override
+    public Completable fetchRemoteRepos(final int page, final int maxCount) {
+        return Completable.fromObservable(
+                fetchFromRemoteStore(page, maxCount)
+                        .map(saveFetchedEntities()));
     }
 
-    private int localRepoCount() {
+    @Override
+    public Completable clearRepos() {
+        return Completable.fromAction(new Action() {
+            @Override
+            public void run() throws Exception {
+                    deleteAllEntities();
+            }
+        });
+    }
+
+    @Override
+    public int localRepoCount() {
         return mRepositoryDao.getRepositoryCount();
     }
 
-    private List<Repository> getLocalEntities(int page, int elementsPerPage) {
+    private Observable<List<Repository>> getLocalEntitiesObservable(final int page,
+                                                                    final int elementsPerPage) {
         return mRepositoryDao.getRepositories(page, elementsPerPage);
     }
 
     private void saveFetchedEntities(Iterable<Repository> repositories) {
-        rewriteEntities(repositories);
-    }
-
-    private void rewriteEntities(Iterable<Repository> repositories) {
-        for (Repository repository : repositories) {
-            rewriteEntity(repository);
-        }
-    }
-
-    private void rewriteEntity(Repository repository) {
-        deleteEntity(repository.getId());
-        persistEntity(repository);
+        mRepositoryDao.insertRepositories(repositories);
     }
 
     private void deleteAllEntities() {
         mRepositoryDao.deleteAllRepositories();
-    }
-
-    private void persistEntity(Repository repository) {
-        mRepositoryDao.insertRepository(repository);
-    }
-
-    private void deleteEntity(String id) {
-        mRepositoryDao.deleteRepository(id);
     }
 }
