@@ -93,8 +93,5 @@ public final class GetRepositoriesInteractorImplTest {
         verify(mRepoRepository, never()).fetchRemoteRepos(anyInt(), anyInt());
         verify(mRepoRepository, times(1))
                 .getRepoPage(eq(page), eq(elementsPerPage));
-//        mGetRepositoriesInteractor.execute(false, elementsPerPage, page);
-//        verify(mRepoRepository, times(1))
-//                .getLocalRepos(eq(false), eq(page), eq(elementsPerPage));
     }
 }

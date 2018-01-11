@@ -4,6 +4,9 @@ import android.support.annotation.NonNull;
 
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
 import io.requery.Persistable;
 import io.requery.sql.EntityDataStore;
 
@@ -19,15 +22,23 @@ public class RepositoryDaoImpl implements RepositoryDao {
     }
 
     @Override
-    public List<Repository> getRepositories(int page, int elementsPerPage) {
-        return mDataStore
-                .select(Repository.class)
-                .orderBy(Repository.NAME.lower())
-                .limit(elementsPerPage)
-                .offset(page * elementsPerPage)
-                .get()
-                .toList();
+    public Observable<List<Repository>> getRepositories(final int page, final int elementsPerPage) {
+        return Observable.create(new ObservableOnSubscribe<List<Repository>>() {
+            @Override
+            public void subscribe(ObservableEmitter<List<Repository>> e) throws Exception {
+                e.onNext(mDataStore
+                            .select(Repository.class)
+                            .orderBy(Repository.NAME.lower())
+                            .limit(elementsPerPage)
+                            .offset(page * elementsPerPage)
+                            .get()
+                            .toList());
+                e.onComplete();
+            }
+        });
     }
+
+
 
     @Override
     public Repository getRepository(String id) {
@@ -55,6 +66,14 @@ public class RepositoryDaoImpl implements RepositoryDao {
     @Override
     public void insertRepository(Repository repository) {
         mDataStore.insert(repository);
+    }
+
+    @Override
+    public void insertRepositories(Iterable<Repository> repositories) {
+        for (Repository repository : repositories) {
+            deleteRepository(repository.getId());
+        }
+        mDataStore.insert(repositories);
     }
 
     @Override

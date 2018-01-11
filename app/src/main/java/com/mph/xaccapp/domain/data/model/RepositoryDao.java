@@ -1,6 +1,9 @@
 package com.mph.xaccapp.domain.data.model;
 
+import java.util.Collection;
 import java.util.List;
+
+import io.reactivex.Observable;
 
 /**
  * Created by Marcos on 17/12/2017.
@@ -8,7 +11,7 @@ import java.util.List;
 
 public interface RepositoryDao {
 
-    List<Repository> getRepositories(int page, int elementsPerPage);
+    Observable<List<Repository>> getRepositories(int page, int elementsPerPage);
 
     Repository getRepository(String id);
 
@@ -17,6 +20,8 @@ public interface RepositoryDao {
     void deleteRepository(String id);
 
     void insertRepository(Repository repository);
+
+    void insertRepositories(Iterable<Repository> repositories);
 
     int getRepositoryCount();
 }

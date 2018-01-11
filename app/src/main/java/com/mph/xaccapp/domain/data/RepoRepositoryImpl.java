@@ -101,39 +101,14 @@ public class RepoRepositoryImpl implements RepoRepository {
 
     private Observable<List<Repository>> getLocalEntitiesObservable(final int page,
                                                                     final int elementsPerPage) {
-        return Observable.create(new ObservableOnSubscribe<List<Repository>>() {
-            @Override
-            public void subscribe(ObservableEmitter<List<Repository>> emitter) throws Exception {
-                emitter.onNext(mRepositoryDao.getRepositories(page, elementsPerPage));
-                emitter.onComplete();
-            }
-        });
+        return mRepositoryDao.getRepositories(page, elementsPerPage);
     }
 
     private void saveFetchedEntities(Iterable<Repository> repositories) {
-        rewriteEntities(repositories);
-    }
-
-    private void rewriteEntities(Iterable<Repository> repositories) {
-        for (Repository repository : repositories) {
-            rewriteEntity(repository);
-        }
-    }
-
-    private void rewriteEntity(Repository repository) {
-        deleteEntity(repository.getId());
-        persistEntity(repository);
+        mRepositoryDao.insertRepositories(repositories);
     }
 
     private void deleteAllEntities() {
         mRepositoryDao.deleteAllRepositories();
-    }
-
-    private void persistEntity(Repository repository) {
-        mRepositoryDao.insertRepository(repository);
-    }
-
-    private void deleteEntity(String id) {
-        mRepositoryDao.deleteRepository(id);
     }
 }
