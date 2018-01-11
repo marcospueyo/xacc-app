@@ -103,7 +103,6 @@ public class MainPresenterImpl implements MainPresenter {
 
             @Override
             public void onNext(List<Repository> repositories) {
-                Log.d(TAG, "onNext: ");
                 mView.hideProgress();
                 List<RepositoryViewModel> viewModels = mMapper.reverseMap(repositories);
                 if (concatOperation) {
@@ -120,7 +119,6 @@ public class MainPresenterImpl implements MainPresenter {
 
             @Override
             public void onError(Throwable e) {
-                Log.d(TAG, "onError: ");
                 mView.hideProgress();
                 mView.showLoadError();
                 mFetchInProcess = false;
@@ -128,7 +126,6 @@ public class MainPresenterImpl implements MainPresenter {
 
             @Override
             public void onComplete() {
-                Log.d(TAG, "onComplete: ");
             }
         });
     }
